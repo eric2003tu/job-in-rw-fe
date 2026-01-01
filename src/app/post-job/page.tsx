@@ -1,3 +1,4 @@
+"use client";
 import dynamic from "next/dynamic";
 const PostJobForm = dynamic(() => import("@/components/PostJobForm"), { ssr: false });
 
