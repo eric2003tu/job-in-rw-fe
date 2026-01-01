@@ -37,6 +37,7 @@ import {
 import { JobType, JobCategory, Job } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { getJobById } from "@/lib/appClient";
+import { format } from "date-fns";
 
 
 interface JobDetailsPageProps {
@@ -93,11 +94,7 @@ export default function JobDetailsPage({ jobId }: JobDetailsPageProps) {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric'
-    });
+    return format(new Date(dateString), 'MMMM d, yyyy');
   };
 
   const getJobTypeColor = (type: JobType) => {
