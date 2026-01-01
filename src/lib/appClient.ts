@@ -84,7 +84,7 @@ export async function createJob(jobData: Omit<Job, "id" | "createdAt" | "updated
 // Handles API calls for the application
 import { Job } from "./types";
 
-const API_BASE_URL = "http://localhost:3000";
+const API_BASE_URL = "https://job-in-rw.onrender.com";
 
 export async function getAllJobs(): Promise<Job[]> {
   const response = await fetch(`${API_BASE_URL}/jobs`, {
