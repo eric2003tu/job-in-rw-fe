@@ -252,7 +252,7 @@ export default function JobApplicationPage() {
         {/* Back Button */}
         <Button
           variant="ghost"
-          onClick={() => router.push(`/jobs/${job.id}`)}
+          onClick={() => router.push(`/jobs`)}
           className="mb-6 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />

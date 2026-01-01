@@ -70,9 +70,8 @@ export default function JobDetailsPage({ jobId }: JobDetailsPageProps) {
   }, [params.id]);
 
   const handleApply = () => {
-    setIsApplied(true);
-    // In real app, this would navigate to application form
-    alert("Application started! You'll be redirected to the application form.");
+    const jobId = params.id as string;
+    router.push(`/jobs/${jobId}/apply`);
   };
 
   const handleBookmark = () => {
