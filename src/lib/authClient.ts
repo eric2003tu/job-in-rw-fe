@@ -1,7 +1,7 @@
 // lib/authClient.ts
 // Handles authentication API calls
 
-const API_BASE_URL = "http://localhost:3000";
+const API_BASE_URL = "https://job-in-rw.onrender.com";
 
 export async function registerUser(name: string, email: string, password: string) {
   const response = await fetch(`${API_BASE_URL}/auth/register`, {
@@ -21,7 +21,7 @@ export async function registerUser(name: string, email: string, password: string
 export async function loginUser(email: string, password: string) {
   const response = await fetch(`${API_BASE_URL}/auth/login`, {
     method: "POST",
-    headers: {
+    headers: { 
       "Content-Type": "application/json",
       "Accept": "application/json",
     },

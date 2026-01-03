@@ -172,7 +172,7 @@ export default function JobList({ dashboardMode, showApplicationCount }: JobList
                 <p className="text-gray-600">Finding the best opportunities for you...</p>
               </div>
             ) : filteredJobs.length > 0 ? (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {filteredJobs.map((job) => (
                   <JobCard key={job.id} job={job} dashboardMode={dashboardMode} showApplicationCount={showApplicationCount} />
                 ))}

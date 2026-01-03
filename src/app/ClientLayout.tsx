@@ -44,7 +44,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
       <MainNav onToggleTheme={toggleTheme} isDark={isDark} />
       <ToastProvider />
-      <main className="w-full max-w-6xl mx-auto px-2 sm:px-6 md:px-8 py-4">
+      <main className="w-full mx-auto px-2 sm:px-6 md:px-8 py-4">
         {children}
       </main>
     </body>
