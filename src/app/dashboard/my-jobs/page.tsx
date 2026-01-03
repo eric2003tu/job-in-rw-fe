@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Button } from '../../../components/ui/button';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Search, Filter, MapPin, Building, Loader2, X } from 'lucide-react';
 import Link from 'next/link';
@@ -17,7 +17,8 @@ export default function MyJobsPage() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [isLoading, setIsLoading] = useState(true);
 
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [checkedLogin, setCheckedLogin] = useState(false);
   const categories = ["All", "Engineering", "Design", "Operations", "Marketing"];
 
   useEffect(() => {
@@ -29,8 +30,14 @@ export default function MyJobsPage() {
   }, []);
 
   useEffect(() => {
+    function checkLogin() {
+      setIsLoggedIn(!!localStorage.getItem("access_token"));
+      setCheckedLogin(true);
+    }
     if (typeof window !== "undefined") {
-      setIsLoggedIn(!!localStorage.getItem("access-token"));
+      checkLogin();
+      document.addEventListener("visibilitychange", checkLogin);
+      return () => document.removeEventListener("visibilitychange", checkLogin);
     }
   }, []);
 
@@ -43,14 +50,7 @@ export default function MyJobsPage() {
       .finally(() => setIsLoading(false));
   }, [isLoggedIn]);
 
-  if (!isLoggedIn) {
-    return (
-      <div className="py-8 px-4 max-w-2xl mx-auto text-center">
-        <h1 className="text-2xl font-bold mb-4">My Jobs</h1>
-        <div className="text-red-500">You must be logged in to view your jobs.</div>
-      </div>
-    );
-  }
+  // Do not return early; handle not-logged-in state in the render below
   useEffect(() => {
     const timer = setTimeout(() => {
       const filtered = jobs.filter((job) => {
@@ -77,9 +77,20 @@ export default function MyJobsPage() {
 
   const hasActiveFilters = searchQuery || selectedCategory !== "All";
 
+  if (!checkedLogin) {
+    // Optionally, show a loading spinner or nothing while checking login
+    return null;
+  }
   return (
     <div className="h-full w-full bg-gradient-to-b from-gray-50 to-white p-4 md:p-8">
       <div className="w-full mx-auto">
+        { !isLoggedIn ? (
+          <div className="py-8 px-4 max-w-2xl mx-auto text-center">
+            <h1 className="text-2xl font-bold mb-4">My Jobs</h1>
+            <div className="text-red-500">You must be logged in to view your jobs.</div>
+          </div>
+        ) : (
+        <>
         {/* Hero Section */}
         <div className="mb-8 text-center">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
@@ -245,6 +256,8 @@ export default function MyJobsPage() {
             New opportunities added daily
           </p>
         </div>
+        </>
+        )}
       </div>
     </div>
   );

@@ -40,14 +40,14 @@ import {
 export default function ApplicationsPage() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [filteredApplications, setFilteredApplications] = useState<Application[]>([]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      setIsLoggedIn(!!localStorage.getItem("access-token"));
+      setIsLoggedIn(!!localStorage.getItem("access_token"));
     }
   }, []);
 
