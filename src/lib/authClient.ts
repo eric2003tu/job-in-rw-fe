@@ -1,3 +1,8 @@
+// Returns true if the user is logged in (access_token exists in localStorage)
+export function isUserLoggedIn(): boolean {
+  if (typeof window === "undefined") return false;
+  return !!localStorage.getItem("access_token");
+}
 // lib/authClient.ts
 // Handles authentication API calls
 

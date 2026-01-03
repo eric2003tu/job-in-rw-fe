@@ -216,7 +216,7 @@ export default function JobDetailsPage({ jobId }: JobDetailsPageProps) {
                       variant="outline"
                       size="sm"
                       onClick={handleBookmark}
-                      className="gap-2 border-blue-200 hover:bg-blue-50"
+                      className="gap-2 border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100"
                     >
                       {isBookmarked ? (
                         <BookmarkCheck className="h-4 w-4 text-blue-600" />
@@ -229,7 +229,7 @@ export default function JobDetailsPage({ jobId }: JobDetailsPageProps) {
                       variant="outline"
                       size="sm"
                       onClick={handleShare}
-                      className="gap-2 border-blue-200 hover:bg-blue-50"
+                      className="gap-2 border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100"
                     >
                       <Share2 className="h-4 w-4" />
                       Share

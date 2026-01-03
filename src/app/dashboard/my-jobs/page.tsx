@@ -7,19 +7,21 @@ import { Badge } from '@/components/ui/badge';
 import { Search, Filter, MapPin, Building, Loader2, X } from 'lucide-react';
 import Link from 'next/link';
 import { getMyJobs } from '@/lib/appClient';
-import { Job } from '@/lib/types';
+import { Job, JobType, JobCategory } from '@/lib/types';
 import JobCard from '@/components/JobCard';
 
 export default function MyJobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [filteredJobs, setFilteredJobs] = useState<Job[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  const [selectedJobType, setSelectedJobType] = useState<string>("All");
   const [isLoading, setIsLoading] = useState(true);
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [checkedLogin, setCheckedLogin] = useState(false);
-  const categories = ["All", "Engineering", "Design", "Operations", "Marketing"];
+  const categories = ["All", ...Object.values(JobCategory)];
+  const jobTypes = ["All", ...Object.values(JobType)];
 
   useEffect(() => {
     setIsLoading(true);
@@ -63,19 +65,23 @@ export default function MyJobsPage() {
         const matchesCategory =
           selectedCategory === "All" || job.category === selectedCategory;
 
-        return matchesSearch && matchesCategory;
+        const matchesJobType =
+          selectedJobType === "All" || job.jobType === selectedJobType;
+
+        return matchesSearch && matchesCategory && matchesJobType;
       });
       setFilteredJobs(filtered);
     }, 300);
     return () => clearTimeout(timer);
-  }, [searchQuery, selectedCategory, jobs]);
+  }, [searchQuery, selectedCategory, selectedJobType, jobs]);
 
   const clearFilters = () => {
     setSearchQuery("");
     setSelectedCategory("All");
+    setSelectedJobType("All");
   };
 
-  const hasActiveFilters = searchQuery || selectedCategory !== "All";
+  const hasActiveFilters = searchQuery || selectedCategory !== "All" || selectedJobType !== "All";
 
   if (!checkedLogin) {
     // Optionally, show a loading spinner or nothing while checking login
@@ -134,10 +140,10 @@ export default function MyJobsPage() {
               </div>
             </div>
 
-            {/* Categories Filter */}
+            {/* Categories & Job Type Filter */}
             <div className="flex flex-wrap items-center gap-2 mt-6">
               <Filter className="h-4 w-4 text-gray-500" />
-              <span className="text-sm font-medium text-gray-700">Filter by:</span>
+              <span className="text-sm font-medium text-gray-700">Category:</span>
               <div className="flex flex-wrap gap-2">
                 {categories.map((category) => (
                   <Badge
@@ -147,6 +153,19 @@ export default function MyJobsPage() {
                     onClick={() => setSelectedCategory(category)}
                   >
                     {category}
+                  </Badge>
+                ))}
+              </div>
+              <span className="text-sm font-medium text-gray-700 ml-4">Job Type:</span>
+              <div className="flex flex-wrap gap-2">
+                {jobTypes.map((type) => (
+                  <Badge
+                    key={type}
+                    variant={selectedJobType === type ? "default" : "outline"}
+                    className="cursor-pointer hover:bg-gray-100"
+                    onClick={() => setSelectedJobType(type)}
+                  >
+                    {type}
                   </Badge>
                 ))}
               </div>
@@ -172,6 +191,15 @@ export default function MyJobsPage() {
                       <X
                         className="h-3 w-3 cursor-pointer"
                         onClick={() => setSelectedCategory("All")}
+                      />
+                    </Badge>
+                  )}
+                  {selectedJobType !== "All" && (
+                    <Badge variant="secondary" className="gap-1">
+                      Job Type: {selectedJobType}
+                      <X
+                        className="h-3 w-3 cursor-pointer"
+                        onClick={() => setSelectedJobType("All")}
                       />
                     </Badge>
                   )}

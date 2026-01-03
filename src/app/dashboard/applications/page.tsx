@@ -4,6 +4,7 @@ import ApplicationsChart from '@/components/ApplicationsChart';
 import { ApplicationStatus, JobType, JobCategory, Application, Job, User } from '../../../lib/types';
 import ApplicationStatusCard from '@/components/ApplicationStatusCard';
 import { getMyApplications } from "@/lib/appClient";
+import { isUserLoggedIn } from "@/lib/authClient";
 import { 
   Card, 
   CardContent, 
@@ -47,7 +48,7 @@ export default function ApplicationsPage() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      setIsLoggedIn(!!localStorage.getItem("access_token"));
+      setIsLoggedIn(isUserLoggedIn());
     }
   }, []);
 
