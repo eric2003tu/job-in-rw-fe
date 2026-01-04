@@ -72,7 +72,7 @@ export default function MainNav({
             onClick={() => setMenuOpen(false)}
           >
             <img src="/fivicon.png" alt="JobInRW Logo" className="h-18 w-18 rounded-full"/>
-            <span className="hidden sm:inline italic">JobInRW</span>
+            <span className="hidden sm:inline italic">JobHub</span>
           </Link> 
         </div>
 
