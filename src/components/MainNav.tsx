@@ -71,7 +71,7 @@ export default function MainNav({
             className="flex items-center gap-2 font-bold text-lg hover:opacity-80 transition-opacity"
             onClick={() => setMenuOpen(false)}
           >
-            <img src="/fivicon.png" alt="JobInRW Logo" className="h-6 w-6"/>
+            <img src="/fivicon.png" alt="JobInRW Logo" className="h-15 w-15 rounded-full"/>
             <span className="hidden sm:inline">JobInRW</span>
           </Link>
         </div>
