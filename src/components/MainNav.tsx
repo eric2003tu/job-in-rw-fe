@@ -65,15 +65,15 @@ export default function MainNav({
   return (
     <>
       <nav className="w-full flex items-center justify-between px-4 py-3 bg-background/95 backdrop-blur-md border-b border-border sticky top-0 z-50 supports-backdrop-blur:bg-background/60">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center">
           <Link 
             href="/" 
             className="flex items-center gap-2 font-bold text-lg hover:opacity-80 transition-opacity"
             onClick={() => setMenuOpen(false)}
           >
             <img src="/fivicon.png" alt="JobInRW Logo" className="h-18 w-18 rounded-full"/>
-            <span className="hidden sm:inline">JobInRW</span>
-          </Link>
+            <span className="hidden sm:inline italic">JobInRW</span>
+          </Link> 
         </div>
 
         {/* Desktop Navigation */}
