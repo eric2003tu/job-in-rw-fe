@@ -1,3 +1,19 @@
+// Fetch a single application by id for the current user (applicant)
+export async function getSingleApplicationById(id: string, tokenFromParam?: string) {
+  const token = tokenFromParam || (typeof window !== "undefined" ? localStorage.getItem("access-token") : null);
+  if (!token) throw new Error("No access token found");
+  const response = await fetch(`${API_BASE_URL}/applications/${id}`, {
+    method: "GET",
+    headers: {
+      "Accept": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  if (!response.ok) {
+    throw new Error("Failed to fetch application details");
+  }
+  return response.json();
+}
 // Fetch a single application by id for job owner
 export async function getApplicationById(id: string, tokenFromParam?: string) {
   const token = tokenFromParam || (typeof window !== "undefined" ? localStorage.getItem("access-token") : null);

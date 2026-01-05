@@ -15,6 +15,7 @@ import {
   ChevronRight,
   ExternalLink
 } from "lucide-react";
+import Link from "next/link";
 
 interface ApplicationStatusCardProps {
   application: Application;
@@ -202,15 +203,13 @@ export default function ApplicationStatusCard({ application }: ApplicationStatus
         </div>
         
         <div className="flex gap-3">
-          <Button 
-            variant="outline" 
-            size="sm"
+          <Link href={`/applications/${application.id}`}  
             className="gap-2 border-gray-300 hover:bg-gray-50 text-gray-700"
           >
             <Eye className="h-4 w-4" />
             View Details
             <ChevronRight className="h-4 w-4" />
-          </Button>
+          </Link>
           
           {application.job?.id && (
             <Button 
