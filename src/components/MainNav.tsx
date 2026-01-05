@@ -12,7 +12,8 @@ import {
   PlusCircle,
   User,
   LogIn,
-  UserPlus
+  UserPlus,
+  PickaxeIcon
 } from "lucide-react";
 import { isUserLoggedIn } from "@/lib/authClient";
 
@@ -60,11 +61,11 @@ export default function MainNav({
 
   // Links that only appear when logged in
   const protectedLinks = isLoggedIn ? [
-    { href: "/dashboard/my-jobs", label: "My Jobs", icon: <LayoutDashboard size={18} /> },
+    { href: "/dashboard/my-jobs", label: "My Jobs", icon: <PickaxeIcon size={18} /> },
     { href: "/dashboard/applications", label: "My Applications", icon: <FileText size={18} /> },
     { href: "/dashboard/post-job", label: "Post a Job", icon: <PlusCircle size={18} /> },
     { href: "/dashboard/my-jobs/applications", label: "Requests", icon: <FileText size={18} /> },
-    { href: "/dashboard", label: "Dashboard", icon: <LayoutDashboard size={18} />}
+    { href: "/dashboard", label: "Overview", icon: <LayoutDashboard size={18} />}
   ] : [];
 
   // Combine all navigation links
