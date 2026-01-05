@@ -10,7 +10,9 @@ import {
   LayoutDashboard,
   FileText,
   PlusCircle,
-  User
+  User,
+  LogIn,
+  UserPlus
 } from "lucide-react";
 import { isUserLoggedIn } from "@/lib/authClient";
 
@@ -51,17 +53,29 @@ export default function MainNav({
     };
   }, [menuOpen]);
 
-  const navLinks = [
+  // Common links for everyone
+  const commonLinks = [
     { href: "/jobs", label: "Jobs", icon: <Briefcase size={18} /> },
+  ];
+
+  // Links that only appear when logged in
+  const protectedLinks = isLoggedIn ? [
     { href: "/dashboard/my-jobs", label: "My Jobs", icon: <LayoutDashboard size={18} /> },
     { href: "/dashboard/applications", label: "My Applications", icon: <FileText size={18} /> },
     { href: "/dashboard/post-job", label: "Post a Job", icon: <PlusCircle size={18} /> },
-    ...(isLoggedIn ? [{ href: "/dashboard/my-jobs/applications", label: "Requests", icon: <FileText size={18} /> }] : []),
-  ];
+    { href: "/dashboard/my-jobs/applications", label: "Requests", icon: <FileText size={18} /> },
+  ] : [];
 
+  // Combine all navigation links
+  const navLinks = [...commonLinks, ...protectedLinks];
+
+  // Authentication links
   const authLinks = isLoggedIn
     ? [{ href: "/profile", label: "Profile", icon: <User size={18} /> }]
-    : [{ href: "/signup", label: "Get Started", icon: <User size={18} /> }];
+    : [
+        { href: "/login", label: "Login", icon: <LogIn size={18} /> },
+        { href: "/signup", label: "Sign Up", icon: <UserPlus size={18} /> }
+      ];
 
   return (
     <>
@@ -94,7 +108,9 @@ export default function MainNav({
             <Link
               key={link.href}
               href={link.href}
-              className="flex items-center gap-2 text-sm hover:text-primary transition-colors"
+              className={`flex items-center gap-2 text-sm hover:text-primary transition-colors ${
+                link.label === "Sign Up" ? "bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90" : ""
+              }`}
             >
               {link.icon}
               {link.label}
@@ -166,7 +182,8 @@ export default function MainNav({
               
               <div className="flex-1 overflow-y-auto p-6">
                 <div className="flex flex-col gap-1">
-                  {navLinks.map((link) => (
+                  {/* Common Links */}
+                  {commonLinks.map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}
@@ -178,13 +195,39 @@ export default function MainNav({
                     </Link>
                   ))}
                   
-                  <div className="h-px bg-border my-2" />
+                  {/* Protected Links (only when logged in) */}
+                  {isLoggedIn && (
+                    <>
+                      <div className="h-px bg-border my-2" />
+                      <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                        Dashboard
+                      </div>
+                      {protectedLinks.map((link) => (
+                        <Link
+                          key={link.href}
+                          href={link.href}
+                          className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted transition-colors"
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          {link.icon}
+                          <span>{link.label}</span>
+                        </Link>
+                      ))}
+                    </>
+                  )}
                   
+                  {/* Auth Links */}
+                  <div className="h-px bg-border my-2" />
+                  <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    Account
+                  </div>
                   {authLinks.map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}
-                      className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted transition-colors"
+                      className={`flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted transition-colors ${
+                        link.label === "Sign Up" ? "bg-primary text-primary-foreground hover:bg-primary/90" : ""
+                      }`}
                       onClick={() => setMenuOpen(false)}
                     >
                       {link.icon}
@@ -196,8 +239,13 @@ export default function MainNav({
               
               <div className="p-6 border-t border-border">
                 <p className="text-sm text-muted-foreground text-center">
-                  © {new Date().getFullYear()} JobInRW
+                  © {new Date().getFullYear()} JobHub
                 </p>
+                {isLoggedIn && (
+                  <p className="text-xs text-muted-foreground text-center mt-2">
+                    Logged in
+                  </p>
+                )}
               </div>
             </div>
           </div>

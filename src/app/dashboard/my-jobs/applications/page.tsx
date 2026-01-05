@@ -10,15 +10,9 @@ export default function MyJobsApplicationsPage() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
 
   useEffect(() => {
-    const token = typeof window !== "undefined" ? localStorage.getItem("access-token") : null;
-    if (!token) {
-      router.push("/login");
-      return;
-    }
-    getMyJobsApplications(token)
+    getMyJobsApplications()
       .then((apps) => {
         setApplications(apps);
         setLoading(false);
@@ -27,7 +21,7 @@ export default function MyJobsApplicationsPage() {
         setError("Failed to load applications");
         setLoading(false);
       });
-  }, [router]);
+  }, []);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;

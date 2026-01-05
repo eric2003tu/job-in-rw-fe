@@ -15,12 +15,7 @@ export default function ApplicationDetailPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const token = typeof window !== "undefined" ? localStorage.getItem("access-token") : null;
-    if (!token) {
-      router.push("/login");
-      return;
-    }
-    getApplicationById(id, token)
+    getApplicationById(id)
       .then((app) => {
         setApplication(app);
         setLoading(false);
@@ -29,7 +24,7 @@ export default function ApplicationDetailPage() {
         setError("Failed to load application details");
         setLoading(false);
       });
-  }, [id, router]);
+  }, [id]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
