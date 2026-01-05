@@ -18,6 +18,7 @@ import {
   Download
 } from "lucide-react";
 import { useState } from "react";
+import Link from "next/link";
 
 interface ApplicationCardProps {
   application: Application;
@@ -215,6 +216,15 @@ export default function ApplicationCard({
             <ExternalLink className="h-3 w-3" />
             View Job
           </Button>
+          {/* View Details link for requests page */}
+          {showJobInfo && (
+            <Link
+              href={`/dashboard/my-jobs/applications/${application.id}`}
+              className="ml-2 text-blue-600 hover:underline text-xs font-medium"
+            >
+              View Details
+            </Link>
+          )}
         </div>
         
         <div className="flex gap-2">
