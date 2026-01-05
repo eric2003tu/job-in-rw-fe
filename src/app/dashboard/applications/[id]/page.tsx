@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Application } from "@/lib/types";
-import { getSingleApplicationById } from "@/lib/appClient";
+import { getMyApplicationById } from "@/lib/appClient";
 import ApplicationCard from "@/components/ApplicationCard";
 
 export default function ApplicationDetailPage() {
@@ -14,7 +14,7 @@ export default function ApplicationDetailPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getSingleApplicationById(id)
+    getMyApplicationById(id)
       .then((app) => {
         setApplication(app);
         setLoading(false);

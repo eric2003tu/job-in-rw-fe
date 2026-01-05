@@ -1,3 +1,41 @@
+// Update status of an application made on a job posted by the logged-in user
+import { ApplicationStatus } from "./types";
+
+/**
+ * Update the status of an application for a job posted by the logged-in user
+ * @param applicationId - The ID of the application to update
+ * @param status - The new status (e.g., "REVIEWED", "INTERVIEW", etc.)
+ * @param tokenFromParam - Optional access token
+ */
+export async function updateApplicationStatusForMyJob(
+  applicationId: string,
+  status: ApplicationStatus,
+  tokenFromParam?: string
+): Promise<Application> {
+  const token = getToken(tokenFromParam);
+  if (!token) throw new Error("No access token found");
+
+  const response = await fetch(`${API_BASE_URL}/jobs/applications/${applicationId}/status`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+    body: JSON.stringify({ status }),
+  });
+
+  if (!response.ok) {
+    if (response.status === 403) {
+      throw new Error("You don't have permission to update this application status");
+    }
+    if (response.status === 404) {
+      throw new Error("Application not found");
+    }
+    throw new Error(`Failed to update application status: ${response.statusText}`);
+  }
+  return response.json();
+}
 import { Application, Job, User } from "./types";
 
 const API_BASE_URL = "https://job-in-rw.onrender.com";
@@ -225,7 +263,7 @@ export async function updateApplicationStatus(
   const token = getToken(tokenFromParam);
   if (!token) throw new Error("No access token found");
   
-  const response = await fetch(`${API_BASE_URL}/applications/${id}/status`, {
+  const response = await fetch(`${API_BASE_URL}/jobs/applications/${id}/status`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Application } from "@/lib/types";
 import { getMyApplicationById, getApplicationForMyJob } from "@/lib/appClient";
-import ApplicationCard from "@/components/ApplicationCard";
+import { ApplicationCard } from "@/components/ApplicationCard";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, ArrowLeft, Shield, User } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -183,6 +183,8 @@ export default function ApplicationDetailPage() {
         <ApplicationCard 
           application={application} 
           showJobInfo={role === "job-owner"}
+          jobOwnerMode={role === "job-owner"}
+          onStatusChange={(newStatus: import("@/lib/types").ApplicationStatus) => setApplication((prev) => prev ? { ...prev, status: newStatus } : prev)}
         />
       </div>
 
