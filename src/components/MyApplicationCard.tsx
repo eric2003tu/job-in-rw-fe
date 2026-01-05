@@ -220,7 +220,7 @@ export default function ApplicationCard({
           {showJobInfo && (
             <Link
               href={`/dashboard/my-jobs/applications/${application.id}`}
-              className="ml-2 text-blue-600 hover:underline text-xs font-medium"
+              className="ml-2 text-white bg-blue-500 hover:bg-blue-600 rounded px-2 py-1 text-white text-xs font-medium"
             >
               View Details
             </Link>

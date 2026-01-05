@@ -202,9 +202,9 @@ export default function ApplicationStatusCard({ application }: ApplicationStatus
           <span>Last updated {formatDate(application.createdAt)}</span>
         </div>
         
-        <div className="flex gap-3">
+        <div className="flex gap-2">
           <Link href={`/applications/${application.id}`}  
-            className="gap-2 border-gray-300 hover:bg-gray-50 text-gray-700"
+            className="gap-2 border-gray-300 bg-blue-500 text-white hover:bg-blue-600 px-4 py-2 rounded-md flex items-center"
           >
             <Eye className="h-4 w-4" />
             View Details
@@ -213,7 +213,7 @@ export default function ApplicationStatusCard({ application }: ApplicationStatus
           
           {application.job?.id && (
             <Button 
-              size="sm"
+              size="sm" 
               className="gap-2 bg-gray-900 hover:bg-gray-800 text-white"
             >
               <ExternalLink className="h-4 w-4" />
