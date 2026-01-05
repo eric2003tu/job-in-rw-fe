@@ -64,6 +64,7 @@ export default function MainNav({
     { href: "/dashboard/applications", label: "My Applications", icon: <FileText size={18} /> },
     { href: "/dashboard/post-job", label: "Post a Job", icon: <PlusCircle size={18} /> },
     { href: "/dashboard/my-jobs/applications", label: "Requests", icon: <FileText size={18} /> },
+    { href: "/dashboard", label: "Dashboard", icon: <LayoutDashboard size={18} />}
   ] : [];
 
   // Combine all navigation links
