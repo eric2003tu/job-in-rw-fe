@@ -80,11 +80,28 @@ export async function createJob(jobData: Omit<Job, "id" | "createdAt" | "updated
   }
   return response.json();
 }
-// lib/appClient.ts
+
 // Handles API calls for the application
 import { Job } from "./types";
 
 const API_BASE_URL = "https://job-in-rw.onrender.com";
+
+// Fetch applications for jobs posted by the current user (job owner)
+export async function getMyJobsApplications(tokenFromParam?: string) {
+  const token = tokenFromParam || (typeof window !== "undefined" ? localStorage.getItem("access-token") : null);
+  if (!token) throw new Error("No access token found");
+  const response = await fetch(`${API_BASE_URL}/jobs/my/applications`, {
+    method: "GET",
+    headers: {
+      "Accept": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  if (!response.ok) {
+    throw new Error("Failed to fetch applications for your jobs");
+  }
+  return response.json();
+}
 
 export async function getAllJobs(): Promise<Job[]> {
   const response = await fetch(`${API_BASE_URL}/jobs`, {

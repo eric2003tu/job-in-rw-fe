@@ -24,13 +24,15 @@ interface ApplicationCardProps {
   dashboardMode?: boolean;
   onUpdate?: (id: string) => void;
   onDelete?: (id: string) => void;
+  showJobInfo?: boolean;
 }
 
 export default function ApplicationCard({ 
   application, 
   dashboardMode, 
   onUpdate,
-  onDelete 
+  onDelete,
+  showJobInfo
 }: ApplicationCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -39,15 +41,15 @@ export default function ApplicationCard({
     switch (status) {
       case "PENDING":
         return {
-          color: "bg-yellow-100 text-yellow-800 border-yellow-200",
+          color: "bg-sky-100 text-sky-800 border-sky-200", // Subtle blue instead of yellow
           icon: Clock,
-          gradient: "from-yellow-400 to-yellow-500"
+          gradient: "from-sky-400 to-sky-500" // Soft blue gradient
         };
       case "REVIEWED":
         return {
-          color: "bg-blue-100 text-blue-800 border-blue-200",
+          color: "bg-gray-100 text-gray-800 border-gray-200", // Changed from blue to gray
           icon: Eye,
-          gradient: "from-blue-400 to-blue-500"
+          gradient: "from-gray-400 to-gray-500" // Gray gradient
         };
       case "INTERVIEW":
         return {
@@ -96,20 +98,17 @@ export default function ApplicationCard({
   return (
     <Card 
       className={`
-        relative overflow-hidden border-2 transition-all duration-300
-        ${isHovered ? 'border-blue-300/50 shadow-xl shadow-blue-200/20' : 'border-blue-100/50'}
-        bg-gradient-to-br from-white to-blue-50/30 backdrop-blur-sm
+        relative overflow-hidden border transition-all duration-300
+        ${isHovered ? 'border-gray-300 shadow-lg' : 'border-gray-200'}
+        bg-white hover:shadow-xl
         hover:-translate-y-0.5
       `}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Animated background effect */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-yellow-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      
-      {/* Status indicator line */}
+      {/* Status indicator line - minimal */}
       <div 
-        className={`absolute top-0 left-0 w-1 h-full bg-gradient-to-b ${statusConfig.gradient}`}
+        className={`absolute top-0 left-0 w-1 h-full ${statusConfig.gradient}`}
       />
 
       <CardHeader className="pb-3">
@@ -119,11 +118,10 @@ export default function ApplicationCard({
               <div className={`p-2 rounded-lg ${statusConfig.color.split(' ')[0].replace('bg-', 'bg-')}/20`}>
                 <StatusIcon className="h-4 w-4" />
               </div>
-              <h3 className="text-lg font-bold text-gray-900 truncate group-hover:text-blue-700 transition-colors">
+              <h3 className="text-lg font-bold text-gray-900 truncate hover:text-gray-800 transition-colors">
                 {application.job?.title ?? "Job Title"}
               </h3>
             </div>
-            
             <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
               <div className="flex items-center gap-1">
                 <Building className="h-3 w-3" />
@@ -138,11 +136,16 @@ export default function ApplicationCard({
                 <span>Applied {formatDate(application.createdAt)}</span>
               </div>
             </div>
+            {/* Show applicant info if showJobInfo is true */}
+            {showJobInfo && (
+              <div className="mt-2 text-xs text-gray-700 bg-gray-50 rounded p-2">
+                <span className="font-semibold">Applicant:</span> {application.user?.name} (<a href={`mailto:${application.user?.email}`} className="text-gray-700 hover:text-gray-900 underline">{application.user?.email}</a>)
+              </div>
+            )}
           </div>
-          
           <Badge 
             className={`
-              ${statusConfig.color} border-2 font-semibold px-3 py-1.5
+              ${statusConfig.color} border font-semibold px-3 py-1.5
               hover:scale-105 transition-transform duration-200
             `}
           >
@@ -154,7 +157,7 @@ export default function ApplicationCard({
       <CardContent className="pb-4">
         <div className="mb-4">
           <div className="flex items-center gap-2 mb-2">
-            <FileText className="h-4 w-4 text-blue-600" />
+            <FileText className="h-4 w-4 text-gray-600" />
             <span className="text-sm font-semibold text-gray-700">Cover Letter</span>
           </div>
           <p className="text-gray-700 leading-relaxed">
@@ -164,7 +167,7 @@ export default function ApplicationCard({
             <Button
               variant="ghost"
               size="sm"
-              className="mt-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-0"
+              className="mt-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-0"
               onClick={() => setIsExpanded(!isExpanded)}
             >
               {isExpanded ? "Show Less" : "Read More"}
@@ -196,7 +199,7 @@ export default function ApplicationCard({
             <Button
               variant="outline"
               size="sm"
-              className="gap-2 border-blue-200 hover:bg-blue-50 hover:border-blue-300"
+              className="gap-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 text-gray-700"
               onClick={() => window.open(application.resumeUrl, '_blank')}
             >
               <Download className="h-3 w-3" />
@@ -206,7 +209,7 @@ export default function ApplicationCard({
           <Button
             variant="ghost"
             size="sm"
-            className="gap-2 text-gray-600 hover:text-blue-700 hover:bg-blue-50"
+            className="gap-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50"
             onClick={() => window.open(`/jobs/${application.jobId}`, '_blank')}
           >
             <ExternalLink className="h-3 w-3" />
@@ -228,9 +231,8 @@ export default function ApplicationCard({
           <Button
             size="sm"
             className={`
-              gap-2 bg-gradient-to-r from-blue-600 to-blue-700 
-              hover:from-blue-700 hover:to-blue-800
-              shadow-md shadow-blue-500/20
+              gap-2 bg-gray-900 hover:bg-gray-800 text-white
+              shadow-md shadow-gray-900/10
             `}
             onClick={() => onUpdate?.(application.id)}
           >
