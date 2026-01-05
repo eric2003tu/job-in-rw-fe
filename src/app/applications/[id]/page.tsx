@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Application } from "@/lib/types";
-import { getSingleApplicationById } from "@/lib/appClient";
-import ApplicationCard from "@/components/ApplicationCard";
+import { getMyApplicationById } from "@/lib/appClient";
+import ApplicationCard from "@/components/MyApplicationCard";
 
 export default function ApplicationDetailPage() {
   const params = useParams();
@@ -14,7 +14,7 @@ export default function ApplicationDetailPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getSingleApplicationById(id)
+    getMyApplicationById(id)
       .then((app) => {
         setApplication(app);
         setLoading(false);
@@ -30,7 +30,7 @@ export default function ApplicationDetailPage() {
   if (!application) return <div>Application not found.</div>;
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
+    <div className="w-full mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Application Details</h1>
       <ApplicationCard application={application} />
       <div className="mt-6 p-4 bg-white rounded shadow">

@@ -20,6 +20,9 @@ export type User = {
   name: string;
   email: string;
   password: string;
+  title?: string;
+  phone?: string;
+  location?: string;
   jobs?: Job[];
   applications?: Application[];
   createdAt: string;
