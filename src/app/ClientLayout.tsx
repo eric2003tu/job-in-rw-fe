@@ -2,8 +2,10 @@
 import React, { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import dynamic from "next/dynamic";
+
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Footer from "../components/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -47,6 +49,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       <main className="w-full mx-auto px-2 sm:px-6 md:px-8 py-4">
         {children}
       </main>
+      <Footer />
     </body>
   );
 }

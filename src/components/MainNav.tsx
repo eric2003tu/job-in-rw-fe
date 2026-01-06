@@ -10,12 +10,17 @@ import {
   LayoutDashboard,
   FileText,
   PlusCircle,
-  User,
   LogIn,
   UserPlus,
-  PickaxeIcon
+  PickaxeIcon,
+  UserCheck,
+  UserCircle,
+  Settings as SettingsIcon,
+  LogOut as LogOutIcon
 } from "lucide-react";
 import { isUserLoggedIn } from "@/lib/authClient";
+import { getCurrentUser } from "@/lib/appClient";
+import { User } from "@/lib/types";
 
 export default function MainNav({ 
   onToggleTheme, 
@@ -26,10 +31,32 @@ export default function MainNav({
 }) {
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const [menuOpen, setMenuOpen] = React.useState(false);
+  const [user, setUser] = React.useState<User | null>(null);
+  const [profileMenuOpen, setProfileMenuOpen] = React.useState(false);
+  // Close profile dropdown on outside click
+  React.useEffect(() => {
+    if (!profileMenuOpen) return;
+    function handleClick(e: MouseEvent) {
+      const dropdown = document.getElementById("profile-dropdown");
+      if (dropdown && !dropdown.contains(e.target as Node)) {
+        setProfileMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [profileMenuOpen]);
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    window.location.href = "/login";
+  };
 
   React.useEffect(() => {
     if (typeof window !== "undefined") {
-      setIsLoggedIn(isUserLoggedIn());
+      const loggedIn = isUserLoggedIn();
+      setIsLoggedIn(loggedIn);
+      if (loggedIn) {
+        getCurrentUser().then((u) => setUser(u)).catch(() => setUser(null));
+      }
     }
   }, []);
 
@@ -71,9 +98,36 @@ export default function MainNav({
   // Combine all navigation links
   const navLinks = [...commonLinks, ...protectedLinks];
 
+  // Helper to get initials from user name
+  // Format name as E. Peter (first initial + last name)
+  function getDisplayName(name: string): string {
+    if (!name) return "?";
+    const parts = name.trim().split(" ");
+    if (parts.length === 1) return parts[0];
+    return `${parts[0][0].toUpperCase()}. ${parts[parts.length - 1]}`;
+  }
+    // Get initials for avatar (first and last)
+    function getInitials(name: string): string {
+      if (!name) return "?";
+      const parts = name.trim().split(" ");
+      if (parts.length === 1) return parts[0][0].toUpperCase();
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+
   // Authentication links
+  // Assume avatarUrl is an optional property on User
   const authLinks = isLoggedIn
-    ? [{ href: "/profile", label: "Profile", icon: <User size={18} /> }]
+    ? [{
+        href: "/profile",
+        label: user?.name ? getDisplayName(user.name) : "Profile",
+        icon: user && !(user as any).avatarUrl ? (
+          <span className="inline-flex items-center justify-center rounded-full bg-blue-500 p-2 text-primary-foreground font-bold text-base border border-primary/30">
+              {user.name ? getInitials(user.name) : "?"}
+          </span>
+        ) : (
+          <UserCircle size={18} />
+        )
+      }]
     : [
         { href: "/login", label: "Login", icon: <LogIn size={18} /> },
         { href: "/signup", label: "Sign Up", icon: <UserPlus size={18} /> }
@@ -106,41 +160,69 @@ export default function MainNav({
             </Link>
           ))}
           
-          {authLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`flex items-center gap-2 text-sm hover:text-primary transition-colors ${
-                link.label === "Sign Up" ? "bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90" : ""
-              }`}
-            >
-              {link.icon}
-              {link.label}
-            </Link>
-          ))}
-
-          {onToggleTheme && (
-            <button
-              onClick={onToggleTheme}
-              className="p-2 rounded-full hover:bg-muted transition-colors"
-              aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-            >
-              {isDark ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
+          {isLoggedIn ? (
+            <div className="relative">
+              <button
+                className="flex items-center gap-2 text-sm hover:text-primary transition-colors focus:outline-none"
+                onClick={() => setProfileMenuOpen((v) => !v)}
+                aria-haspopup="true"
+                aria-expanded={profileMenuOpen}
+                id="profile-menu-btn"
+                type="button"
+              >
+                {user && !(user as any).avatarUrl ? (
+                  <span className="inline-flex items-center justify-center rounded-full bg-blue-500 p-2 text-primary-foreground font-bold text-base border border-primary/30">
+                    {user.name ? getInitials(user.name) : "?"}
+                  </span>
+                ) : (
+                  <UserCircle size={18} />
+                )}
+                <span>{user?.name ? getDisplayName(user.name) : "Profile"}</span>
+              </button>
+              {profileMenuOpen && (
+                <div id="profile-dropdown" className="absolute right-0 mt-2 w-48 bg-white border border-border rounded-md shadow-lg z-50 animate-fade-in">
+                  <a
+                    href="/profile"
+                    className="flex items-center gap-2 px-4 py-2 hover:bg-muted transition-colors text-sm"
+                    onClick={() => setProfileMenuOpen(false)}
+                  >
+                    <UserCircle size={16} /> View Profile
+                  </a>
+                  <a
+                    href="/settings"
+                    className="flex items-center gap-2 px-4 py-2 hover:bg-muted transition-colors text-sm"
+                    onClick={() => setProfileMenuOpen(false)}
+                  >
+                    <SettingsIcon size={16} /> Settings
+                  </a>
+                  <button
+                    className="flex items-center gap-2 px-4 py-2 w-full text-left hover:bg-muted transition-colors text-sm"
+                    onClick={handleLogout}
+                  >
+                    <LogOutIcon size={16} /> Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            authLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`flex items-center gap-2 text-sm hover:text-primary transition-colors ${
+                  link.label === "Sign Up" ? "bg-blue-500 text-primary-foreground px-4 py-2 rounded-md hover:bg-blue-600" : ""
+                }`}
+              >
+                {link.icon}
+                {link.label}
+              </Link>
+            ))
           )}
+          
         </div>
 
         {/* Mobile Menu Button */}
         <div className="flex items-center gap-2 md:hidden">
-          {onToggleTheme && (
-            <button
-              onClick={onToggleTheme}
-              className="p-2 rounded-full hover:bg-muted transition-colors"
-              aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-            >
-              {isDark ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
-          )}
           
           <button
             onClick={() => setMenuOpen(!menuOpen)}
