@@ -326,9 +326,17 @@ export default function MainNav({
                   © {new Date().getFullYear()} JobHub
                 </p>
                 {isLoggedIn && (
-                  <p className="text-xs text-muted-foreground text-center mt-2">
-                    Logged in
-                  </p>
+                  <>
+                    <p className="text-xs text-muted-foreground text-center mt-2">
+                      Logged in
+                    </p>
+                    <button
+                      className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2 rounded-md bg-red-500 text-white hover:bg-red-600 transition-colors text-sm font-medium"
+                      onClick={handleLogout}
+                    >
+                      <LogOutIcon size={16} /> Logout
+                    </button>
+                  </>
                 )}
               </div>
             </div>
