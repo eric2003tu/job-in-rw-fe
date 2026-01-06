@@ -22,6 +22,8 @@ export default function JobList({ dashboardMode, showApplicationCount }: JobList
   const [selectedJobType, setSelectedJobType] = useState<string>("All");
   const [filteredJobs, setFilteredJobs] = useState<Job[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const jobsPerPage = 18;
 
   const categories = ["All", ...Object.values(JobCategory)];
   const jobTypes = ["All", ...Object.values(JobType)];
@@ -59,6 +61,7 @@ export default function JobList({ dashboardMode, showApplicationCount }: JobList
         return matchesSearch && matchesCategory && matchesJobType;
       });
       setFilteredJobs(filtered);
+      setCurrentPage(1); // Reset to first page on filter/search change
     }, 300);
     return () => clearTimeout(timer);
   }, [searchQuery, selectedCategory, selectedJobType, jobs]);
@@ -73,6 +76,10 @@ export default function JobList({ dashboardMode, showApplicationCount }: JobList
   // In the returned JSX, if dashboardMode is true, show edit/delete buttons for each job
 
   const hasActiveFilters = searchQuery || selectedCategory !== "All" || selectedJobType !== "All";
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
+  const paginatedJobs = filteredJobs.slice((currentPage - 1) * jobsPerPage, currentPage * jobsPerPage);
 
   return (
     <div className="h-full w-full bg-gradient-to-b from-gray-50 to-white p-4 md:p-8">
@@ -199,12 +206,38 @@ export default function JobList({ dashboardMode, showApplicationCount }: JobList
                 <Loader2 className="h-8 w-8 animate-spin text-blue-600 mb-4" />
                 <p className="text-gray-600">Finding the best opportunities for you...</p>
               </div>
-            ) : filteredJobs.length > 0 ? (
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {filteredJobs.map((job) => (
-                  <JobCard key={job.id} job={job} dashboardMode={dashboardMode} showApplicationCount={showApplicationCount} />
-                ))}
-              </div>
+            ) : paginatedJobs.length > 0 ? (
+              <>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  {paginatedJobs.map((job) => (
+                    <JobCard key={job.id} job={job} dashboardMode={dashboardMode} showApplicationCount={showApplicationCount} />
+                  ))}
+                </div>
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                  <div className="flex justify-center items-center gap-2 mt-8">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                    >
+                      Previous
+                    </Button>
+                    <span className="px-2 text-sm text-gray-700">
+                      Page {currentPage} of {totalPages}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                      disabled={currentPage === totalPages}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                )}
+              </>
             ) : (
               <div className="text-center py-12">
                 <div className="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
