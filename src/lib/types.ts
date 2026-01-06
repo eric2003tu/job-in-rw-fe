@@ -67,3 +67,34 @@ export enum ApplicationStatus {
   ACCEPTED = "ACCEPTED",
   REJECTED = "REJECTED",
 }
+
+// Sorting order
+export enum SortOrder {
+  ASC = "ASC",
+  DESC = "DESC",
+}
+
+// Fields that can be sorted
+export enum JobSortField {
+  DATE = "DATE",
+  SALARY = "SALARY",
+}
+
+// Filter and sort options for jobs
+export type JobFilterOptions = {
+  title?: string;
+  company?: string;
+  location?: string;
+  jobType?: JobType;
+  category?: JobCategory;
+  minSalary?: number;
+  maxSalary?: number;
+  postedById?: string;
+  dateFrom?: string;
+  dateTo?: string;
+};
+
+export type JobSortOptions = {
+  field: JobSortField;
+  order: SortOrder;
+};

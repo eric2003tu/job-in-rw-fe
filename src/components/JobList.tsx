@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Search, Filter, MapPin, Building, Loader2, X } from "lucide-react";
 import JobCard from "./JobCard";
 
-import { JobType, JobCategory, Job } from "@/lib/types";
+import { JobType, JobCategory, Job, JobSortField, SortOrder } from "@/lib/types";
 import { getAllJobs } from "@/lib/appClient";
 
 interface JobListProps {
@@ -24,6 +24,10 @@ export default function JobList({ dashboardMode, showApplicationCount }: JobList
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const jobsPerPage = 18;
+
+  // Sorting state
+  const [sortField, setSortField] = useState<JobSortField>(JobSortField.DATE);
+  const [sortOrder, setSortOrder] = useState<SortOrder>(SortOrder.DESC);
 
   const categories = ["All", ...Object.values(JobCategory)];
   const jobTypes = ["All", ...Object.values(JobType)];
@@ -42,10 +46,10 @@ export default function JobList({ dashboardMode, showApplicationCount }: JobList
       });
   }, []);
 
-  // Filter jobs based on search and category
+  // Filter and sort jobs
   useEffect(() => {
     const timer = setTimeout(() => {
-      const filtered = jobs.filter((job) => {
+      let filtered = jobs.filter((job) => {
         const matchesSearch = searchQuery
           ? job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
             job.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -60,11 +64,41 @@ export default function JobList({ dashboardMode, showApplicationCount }: JobList
 
         return matchesSearch && matchesCategory && matchesJobType;
       });
+
+      // Sorting
+      filtered = filtered.sort((a, b) => {
+        if (sortField === JobSortField.DATE) {
+          const dateA = new Date(a.createdAt).getTime();
+          const dateB = new Date(b.createdAt).getTime();
+          return sortOrder === SortOrder.ASC ? dateA - dateB : dateB - dateA;
+        }
+        if (sortField === JobSortField.SALARY) {
+          // Extract numbers from salary string, fallback to 0 if not found
+          const getSalaryValue = (salary: string) => {
+            if (!salary) return 0;
+            const match = salary.match(/\d+[,.]?\d*/g);
+            if (!match) return 0;
+            // Use the first number found (or average if range)
+            if (match.length === 1) return parseInt(match[0].replace(/,/g, ""));
+            if (match.length >= 2) {
+              const min = parseInt(match[0].replace(/,/g, ""));
+              const max = parseInt(match[1].replace(/,/g, ""));
+              return Math.round((min + max) / 2);
+            }
+            return 0;
+          };
+          const salaryA = getSalaryValue(a.salary);
+          const salaryB = getSalaryValue(b.salary);
+          return sortOrder === SortOrder.ASC ? salaryA - salaryB : salaryB - salaryA;
+        }
+        return 0;
+      });
+
       setFilteredJobs(filtered);
       setCurrentPage(1); // Reset to first page on filter/search change
     }, 300);
     return () => clearTimeout(timer);
-  }, [searchQuery, selectedCategory, selectedJobType, jobs]);
+  }, [searchQuery, selectedCategory, selectedJobType, jobs, sortField, sortOrder]);
 
   const clearFilters = () => {
     setSearchQuery("");
@@ -78,6 +112,15 @@ export default function JobList({ dashboardMode, showApplicationCount }: JobList
   const hasActiveFilters = searchQuery || selectedCategory !== "All" || selectedJobType !== "All";
 
   // Pagination logic
+  // Sorting field and order options
+  const sortFieldOptions = [
+    { label: "Date", value: JobSortField.DATE },
+    { label: "Salary", value: JobSortField.SALARY },
+  ];
+  const sortOrderOptions = [
+    { label: "Ascending", value: SortOrder.ASC },
+    { label: "Descending", value: SortOrder.DESC },
+  ];
   const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
   const paginatedJobs = filteredJobs.slice((currentPage - 1) * jobsPerPage, currentPage * jobsPerPage);
 
@@ -121,6 +164,34 @@ export default function JobList({ dashboardMode, showApplicationCount }: JobList
                     <X className="h-4 w-4 text-gray-400 hover:text-gray-600" />
                   </button>
                 )}
+              </div>
+            </div>
+
+            {/* Sort Field and Order Dropdowns */}
+            <div className="flex items-center gap-4 mt-4">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-gray-700">Sort field:</span>
+                <select
+                  className="border rounded px-2 py-1 text-sm"
+                  value={sortField}
+                  onChange={e => setSortField(e.target.value as JobSortField)}
+                >
+                  {sortFieldOptions.map(opt => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-gray-700">Order:</span>
+                <select
+                  className="border rounded px-2 py-1 text-sm"
+                  value={sortOrder}
+                  onChange={e => setSortOrder(e.target.value as SortOrder)}
+                >
+                  {sortOrderOptions.map(opt => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
               </div>
             </div>
 
